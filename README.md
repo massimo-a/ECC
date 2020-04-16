@@ -1,0 +1,3 @@
+Notes
+* Program is not secure and is for educational purposes only
+* ...
