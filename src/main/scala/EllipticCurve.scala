@@ -24,6 +24,10 @@ case class EllipticCurve(b: BigInt, c: BigInt, p: BigInt)  {
     ECPoint(x3.mod(p), (m*(p1.x - x3) - p1.y).n.mod(p))
   }
 
+  def subtract(p1: Point, p2: Point): Point = {
+    add(p1, -p2)
+  }
+
   def multiply(a: Point, b: BigInt): Point = {
     @tailrec
     def mult(a: Point, b: BigInt, accu: Point): Point = {
