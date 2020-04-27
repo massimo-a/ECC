@@ -1,9 +1,19 @@
 import scala.annotation.tailrec
 
+/** An elliptic curve modulo a prime.
+ * @param b the x-coefficient
+ * @param c the x-squared-coefficient
+ * @param p the prime modulo of the curve
+ */
 case class EllipticCurve(b: BigInt, c: BigInt, p: BigInt)  {
-  def invModPrime(n: BigInt): BigInt = {
+  private def invModPrime(n: BigInt): BigInt = {
     n.modPow(p-2, p)
   }
+  /** Adds two points on the elliptic curve together.
+   * @param p1 The first point on the elliptic curve
+   * @param p2 The second point on the elliptic curve
+   * @return A new instance of Point
+   */
   def add(p1: Point, p2: Point): Point = {
     p1 match {
       case PointAtInfinity => return p2
@@ -31,7 +41,12 @@ case class EllipticCurve(b: BigInt, c: BigInt, p: BigInt)  {
     add(p1, -p2)
   }
 
-  def multiply(a: Point, b: BigInt): Point = {
+  /** Adds a point on the elliptic curve to itself a given number of times by repeated doubling.
+    * @param pt The point on the elliptic curve
+    * @param b The quantity by which the point is being multiplied by
+    * @return a new instance of Point
+    */
+  def multiply(pt: Point, b: BigInt): Point = {
     @tailrec
     def mult(a: Point, b: BigInt, accu: Point): Point = {
       if (b == 0) {
@@ -45,15 +60,25 @@ case class EllipticCurve(b: BigInt, c: BigInt, p: BigInt)  {
         mult(add(a, a), c, add(d, accu))
       }
     }
-    mult(a, b, PointAtInfinity)
+    mult(pt, b, PointAtInfinity)
   }
 
+  /** Determines whether the point lies on this elliptic curve.
+   * @param point The point on the elliptic curve
+   * @return a boolean
+   */
   def pointIsOnCurve(point: Point): Boolean = {
     (point.y*point.y).mod(p) == (point.x*point.x*point.x + b*point.x + c).mod(p)
   }
 }
 
 case object EllipticCurve {
+  /** Creates an elliptic curve from the x-coefficient, the prime modulo and a point that needs to be on the curve.
+   * @param b the x-coefficient of the curve
+   * @param p the prime modulo
+   * @param basePoint the point that is required to be on the curve
+   * @return a new instance of an elliptic curve
+   */
   def apply(b: BigInt, p: BigInt, basePoint: Point): EllipticCurve = {
     val c = (basePoint.y*basePoint.y - basePoint.x*basePoint.x*basePoint.x - b*basePoint.x).mod(p)
     EllipticCurve(b, c, p)

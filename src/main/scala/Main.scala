@@ -16,6 +16,8 @@ object Main {
         |--privateKey [pk]   : If you have a private key already, you can use this parameter to input
         |                      it. If you do not, a private key will be randomly generated for you. Note
         |                      the private key should be an integer in the range [1, p-1].
+        |--diffie            : Option for running the Elliptic Curve Diffie-Hellman key agreement protocol.
+        |--elgamal           : Option for running the Elliptic Curve ElGamal cryptosystem.
         |""".stripMargin)
   }
   def diffieHellman(diffie: ECCrypto, privkey: BigInt): Unit = {

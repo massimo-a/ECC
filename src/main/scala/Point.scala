@@ -1,3 +1,6 @@
+/**
+ * A point in space.
+ */
 trait Point {
   val x: BigInt
   val y: BigInt
@@ -10,11 +13,13 @@ case class ECPoint(x: BigInt, y: BigInt) extends Point {
   }
 }
 
-// The "point at infinity" acts as the additive identity of any elliptic curve
+/**
+ * represents the point-at-infinity on an elliptic curve, which acts as the additive identity for the group.
+ */
 case object PointAtInfinity extends Point {
   val x = BigInt(0)
   val y = BigInt(0)
   override def unary_-(): Point = {
-    ECPoint(x, -y)
+    PointAtInfinity
   }
 }

@@ -92,10 +92,18 @@ case class ECCrypto(
     throw new Exception("Integer could not be mapped to point on elliptic curve")
   }
 
+  /**
+   * @return a cryptographically secure, random private key in the range [0, p-1]
+   */
   def generatePrivateKey: BigInt = {
     BigInt(p.bitLength, new SecureRandom())
   }
 
+  /** Encrypts a message, given as a number, using the ElGamal cryptosystem.
+   * @param plain the plaintext message as a big integer
+   * @param pubkey the public key belonging to the person who the message is going to
+   * @return two new points on the elliptic curve
+   */
   def encrypt(plain: BigInt, pubkey: Point): (Point, Point) = {
     val pt = messageToPoint(plain)
     val secret = BigInt(p.bitLength, new SecureRandom())
@@ -103,15 +111,29 @@ case class ECCrypto(
     (c, curve.add(d, pt))
   }
 
+  /** Decrypt a message, given as two points.
+   * @param cipher the ciphertext
+   * @param pk the private key of the person who is meant to read the message
+   * @return the message, as a big integer
+   */
   def decrypt(cipher: (Point, Point), pk: BigInt): BigInt = {
     val pt = curve.subtract(cipher._2, curve.multiply(cipher._1, pk))
     pt.x/success
   }
 
+  /** Gets the public key belonging to the person with the given private key.
+   * @param privateKey the private key of the user
+   * @return a public key belonging to the person whose private key was given
+   */
   def getPublicKey(privateKey: BigInt): Point = {
     curve.multiply(generator, privateKey)
   }
 
+  /** Uses Diffie-Hellman key agreement to generate a shared private key.
+   * @param point the public key belonging to the second party
+   * @param privateKey the user's private key
+   * @return a shared private key known only to the two parties, as a point on the elliptic curve
+   */
   def getSharedKey(point: Point, privateKey: BigInt): Point = {
     curve.multiply(point, privateKey)
   }
